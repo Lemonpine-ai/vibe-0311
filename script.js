@@ -377,17 +377,6 @@ function initSubscriptionManagement() {
     updateSubscriptionDisplay();
 }
 
-/** 고양이 사진을 다운로드 폴더에 저장하여 사용자가 폴더에서 찾을 수 있게 함 */
-function downloadCatPhotoToFolder({ imageDataUrl, fileName }) {
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.href = imageDataUrl;
-    downloadAnchor.download = fileName || '고양이사진.png';
-    downloadAnchor.style.display = 'none';
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    document.body.removeChild(downloadAnchor);
-}
-
 function initCatManagement() {
     const container = document.getElementById('cat-cards-container');
     const addBtn = document.getElementById('cat-add-btn');
@@ -396,7 +385,7 @@ function initCatManagement() {
         const card = document.createElement('div');
         card.className = 'cat-card';
         card.innerHTML = `
-            <div class="cat-card-photo" title="클릭: 폴더에서 사진 선택">
+            <div class="cat-card-photo" title="클릭하면 폴더에서 사진을 선택할 수 있습니다">
                 <img src="https://placekitten.com/120/120" alt="고양이 사진" class="cat-photo-img">
                 <input type="file" class="cat-photo-input" accept="image/*" style="display: none;">
             </div>
@@ -405,30 +394,14 @@ function initCatManagement() {
         const photoArea = card.querySelector('.cat-card-photo');
         const photoInput = card.querySelector('.cat-photo-input');
         const photoImg = card.querySelector('.cat-photo-img');
-        let uploadedFileName = null;
 
-        photoArea?.addEventListener('click', (event) => {
-            if (event.button === 2) return;
-            const isUserUploadedPhoto = photoImg?.src?.startsWith('data:');
-            if (isUserUploadedPhoto && uploadedFileName) {
-                downloadCatPhotoToFolder({ imageDataUrl: photoImg.src, fileName: uploadedFileName });
-            } else {
-                photoInput?.click();
-            }
-        });
-        photoArea?.addEventListener('contextmenu', (event) => {
-            event.preventDefault();
-            photoInput?.click();
-        });
+        photoArea?.addEventListener('click', () => photoInput?.click());
         photoInput?.addEventListener('change', (e) => {
             const selectedFile = e.target.files?.[0];
             if (selectedFile) {
-                uploadedFileName = selectedFile.name;
                 const reader = new FileReader();
                 reader.onload = (ev) => {
                     if (photoImg) photoImg.src = ev.target?.result || '';
-                    photoArea?.setAttribute('title', '클릭: 다운로드 폴더에 저장 | 우클릭: 사진 변경');
-                    photoArea?.setAttribute('data-downloadable', 'true');
                 };
                 reader.readAsDataURL(selectedFile);
             }
