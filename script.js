@@ -385,7 +385,7 @@ function initCatManagement() {
         const card = document.createElement('div');
         card.className = 'cat-card';
         card.innerHTML = `
-            <div class="cat-card-photo" title="클릭하면 폴더에서 사진을 선택할 수 있습니다">
+            <div class="cat-card-photo">
                 <img src="https://placekitten.com/120/120" alt="고양이 사진" class="cat-photo-img">
                 <input type="file" class="cat-photo-input" accept="image/*" style="display: none;">
             </div>
@@ -393,17 +393,16 @@ function initCatManagement() {
         `;
         const photoArea = card.querySelector('.cat-card-photo');
         const photoInput = card.querySelector('.cat-photo-input');
-        const photoImg = card.querySelector('.cat-photo-img');
-
         photoArea?.addEventListener('click', () => photoInput?.click());
         photoInput?.addEventListener('change', (e) => {
-            const selectedFile = e.target.files?.[0];
-            if (selectedFile) {
+            const file = e.target.files?.[0];
+            if (file) {
                 const reader = new FileReader();
                 reader.onload = (ev) => {
-                    if (photoImg) photoImg.src = ev.target?.result || '';
+                    const img = card.querySelector('.cat-photo-img');
+                    if (img) img.src = ev.target?.result || '';
                 };
-                reader.readAsDataURL(selectedFile);
+                reader.readAsDataURL(file);
             }
         });
         return card;
